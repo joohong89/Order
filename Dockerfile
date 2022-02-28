@@ -2,7 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-ENV CONNECTION_STRING=mongodb://db-mongo:27017
+ENV CONNECTION_STRING = mongodb://db-mongo:27017
 ENV RABBITMQ_PORT 5672
 ENV RABBITMQ_HOST rabbitmq
 EXPOSE 80

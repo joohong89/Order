@@ -28,7 +28,7 @@ namespace Order.Consumer
             var factory = new ConnectionFactory
             {
 
-               //  HostName = "localhost" , 
+                 //HostName = "localhost" , 
                   //Port = 31672
                    HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
                    Port = Convert.ToInt32(Environment.GetEnvironmentVariable("RABBITMQ_PORT"))
@@ -81,25 +81,39 @@ namespace Order.Consumer
         private async Task HandleMessageAsync(string content)
         {
             // we just print this message   
-           //_logger.LogInformation($"consumer received {content}");
+            //_logger.LogInformation($"consumer received {content}");
 
             // convert to orders 
-            CartMaster cartMaster = (CartMaster)Newtonsoft.Json.JsonConvert.DeserializeObject(content);
-
+            CartMaster cartMaster = Newtonsoft.Json.JsonConvert.DeserializeObject<CartMaster>(content);
 
             // set Order OBJ and save
             if (null != cartMaster) {
-                OrderMaster orderMaster = new OrderMaster();
-                orderMaster.Products = cartMaster.Products;
-                orderMaster.Total = cartMaster.Total;
+                try
+                {
+                   
+                    OrderMaster orderMaster = new OrderMaster();
+                    orderMaster.Id = Guid.NewGuid().ToString();
+                    orderMaster.Products = cartMaster.Products;
+                    orderMaster.Total = cartMaster.Total;
 
-                // TODO: got time change this 
-                orderMaster.OrderStatus = "SUCCESS";
+                    // TODO: got time change this 
+                    orderMaster.OrderStatus = "SUCCESS";
+                    // save item to db
+                    await _orderService.CreateAsync(orderMaster);
+                    OrderMaster? results = await _orderService.GetAsync(orderMaster.Id);
 
-                // save item to db
-                await _orderService.CreateAsync(orderMaster);
+                    
+
+                }
+                catch (Exception ex) {
+                    Console.WriteLine($"Order Failed");
+
+                }
+                
+                // TODO: create success/fail scenario for carts service to picked up
+          
             }
-
+            /*
             string[] tokens = content.Split("=");
             string[] orders = tokens[1].Split(",");
             string[] customers = tokens[2].Split(",");
@@ -113,7 +127,7 @@ namespace Order.Consumer
             var factory = new ConnectionFactory()
             {
                // HostName = "localhost",
-                // Port = 31672
+               // Port = 31672
                  HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
                  Port = Convert.ToInt32(Environment.GetEnvironmentVariable("RABBITMQ_PORT"))
             };
@@ -135,7 +149,7 @@ namespace Order.Consumer
                                      routingKey: "orderstatus",
                                      basicProperties: null,
                                      body: body);
-            }
+            }*/
 
         }
 
