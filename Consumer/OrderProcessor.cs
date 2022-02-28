@@ -92,7 +92,7 @@ namespace Order.Consumer
                 {
                    
                     OrderMaster orderMaster = new OrderMaster();
-                    orderMaster.Id = Guid.NewGuid().ToString();
+                  //  orderMaster.Id = Guid.NewGuid().ToString();
                     orderMaster.Products = cartMaster.Products;
                     orderMaster.Total = cartMaster.Total;
 
@@ -100,7 +100,7 @@ namespace Order.Consumer
                     orderMaster.OrderStatus = "SUCCESS";
                     // save item to db
                     await _orderService.CreateAsync(orderMaster);
-                    OrderMaster? results = await _orderService.GetAsync(orderMaster.Id);
+                 //   OrderMaster? results = await _orderService.GetAsync(orderMaster.Id);
 
                     
 
